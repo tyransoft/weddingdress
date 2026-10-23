@@ -620,9 +620,14 @@ def reservation_detail(request, invoice_id):
         return redirect('reservations_list')
     
     rental_days = 0
+    rental_weeks = 0
+
     if reservation.rent_start_date and reservation.rent_end_date:
-        rental_days = (reservation.rent_end_date - reservation.rent_start_date).days + 1
-    
+       rental_days = (
+        reservation.rent_end_date - reservation.rent_start_date
+       ).days + 1
+
+       rental_weeks = (rental_days + 6) // 7
     items_data = []
     for item in reservation.items.all():  
         items_data.append({
@@ -636,7 +641,7 @@ def reservation_detail(request, invoice_id):
     context = {
         'reservation': reservation,
         'items_data': items_data,
-        'rental_days': rental_days,
+        'rental_days': rental_weeks,
         'total_items': reservation.items.count(),
     }
     return render(request, 'reservation_detail.html', context)

@@ -685,7 +685,8 @@ class Invoice(models.Model):
     @property
     def rental_days(self):
         if self.rent_start_date and self.rent_end_date:
-            return (self.rent_end_date - self.rent_start_date).days + 1
+            return (self.rent_end_date - self.rent_start_date).days 
+        
         return 0
 
 
