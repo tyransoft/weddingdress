@@ -1017,7 +1017,7 @@ function updateRentDates() {
     endDateInput.value = endDate;
     endDateInput.min = endDate;
 
-    document.getElementById('modal-rent-days').textContent = '7';
+    document.getElementById('modal-rent-days').textContent = '1';
     document.getElementById('form_rent_days').value = '7';
 
     document.getElementById('form_rent_start_date').value = startDate;
@@ -1216,29 +1216,38 @@ return Object.values(cart).reduce(function(s, p) { return s + p.days; }, 0);
 return Object.values(cart).reduce(function(s, p) { return s + p.qty; }, 0);
 }
 }
+
 function updateRentDays() {
     var startDate = document.getElementById('rent_start_date_input').value;
     var endDate = document.getElementById('rent_end_date_input').value;
 
+    var weeksDisplay = document.getElementById('modal-rent-days');
+    var daysInput = document.getElementById('form_rent_days');
+
     if (!startDate || !endDate) {
-        document.getElementById('modal-rent-days').textContent = '0';
-        document.getElementById('form_rent_days').value = '0';
+        weeksDisplay.textContent = '0';
+        daysInput.value = '0';
         return;
     }
 
     var start = new Date(startDate + 'T00:00:00');
     var end = new Date(endDate + 'T00:00:00');
 
-    var diff = Math.round((end - start) / (1000 * 60 * 60 * 24));
+    var diff = Math.round(
+        (end - start) / (1000 * 60 * 60 * 24)
+    );
 
-    if (diff < 1) {
-        document.getElementById('modal-rent-days').textContent = '0';
-        document.getElementById('form_rent_days').value = '0';
+    if (diff <= 0) {
+        weeksDisplay.textContent = '0';
+        daysInput.value = '0';
         return;
     }
 
-    document.getElementById('modal-rent-days').textContent = diff;
-    document.getElementById('form_rent_days').value = diff;
+    var weeks = Math.ceil(diff / 7);
+
+    weeksDisplay.textContent = weeks;
+
+    daysInput.value = diff;
 }
 function renderCart() {
 var keys = Object.keys(cart);
