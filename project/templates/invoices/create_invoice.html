@@ -996,17 +996,19 @@ function getFirstProductId() {
     }
     return null;
 }
+
 function updateRentDates() {
     var startDateInput = document.getElementById('rent_start_date_input');
     var endDateInput = document.getElementById('rent_end_date_input');
 
     var startDate = startDateInput.value;
-
     if (!startDate) return;
 
-    var start = new Date(startDate + 'T00:00:00');
+    var keys = Object.keys(cart);
+    var weeks = keys.length > 0 ? cart[keys[0]].days : 1;
 
-    start.setDate(start.getDate() + 7);
+    var start = new Date(startDate + 'T00:00:00');
+    start.setDate(start.getDate() + (weeks * 7));
 
     var year = start.getFullYear();
     var month = String(start.getMonth() + 1).padStart(2, '0');
@@ -1017,8 +1019,8 @@ function updateRentDates() {
     endDateInput.value = endDate;
     endDateInput.min = endDate;
 
-    document.getElementById('modal-rent-days').textContent = '1';
-    document.getElementById('form_rent_days').value = '7';
+    document.getElementById('modal-rent-days').textContent = weeks;
+    document.getElementById('form_rent_days').value = weeks * 7;
 
     document.getElementById('form_rent_start_date').value = startDate;
     document.getElementById('form_rent_end_date').value = endDate;
@@ -1073,14 +1075,21 @@ function toggleInvoiceType() {
     calcModalTotals();
 }
 
+
 function updateRentPrice() {
-var keys = Object.keys(cart);
-if (keys.length > 0) {
-var firstItem = cart[keys[0]];
-document.getElementById('form_rent_price_per_day').value = firstItem.price.toFixed(2);
-document.getElementById('modal-rent-price').textContent = firstItem.price.toFixed(2);
+    var keys = Object.keys(cart);
+
+    if (keys.length > 0) {
+        var firstItem = cart[keys[0]];
+
+        document.getElementById('form_rent_price_per_day').value =
+            firstItem.price.toFixed(2);
+
+        document.getElementById('modal-rent-price').textContent =
+            firstItem.price.toFixed(2);
+    }
 }
-}
+
 
 function updateSalePrice() {
     var saleInput = document.getElementById('sale_price_display');
@@ -1124,34 +1133,39 @@ if (!product) return;
         }
     }
 if (cart[id]) {
-if (invoiceType === 'rent') {
-cart[id].days += 1;
+    if (invoiceType === 'rent') {
+        var newWeeks = cart[id].days + 1;
+
+        Object.keys(cart).forEach(function(key) {
+            cart[key].days = newWeeks;
+            cart[key].total = newWeeks * cart[key].price;
+        });
+    } else {
+        cart[id].qty += 1;
+        cart[id].total = cart[id].qty * cart[id].price;
+    }
 } else {
-cart[id].qty += 1;
+    var initialWeeks = 1;
+
+    if (invoiceType === 'rent' && Object.keys(cart).length > 0) {
+        initialWeeks = cart[Object.keys(cart)[0]].days;
+    }
+
+    cart[id] = {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        days: initialWeeks,
+        qty: 1,
+        total: invoiceType === 'rent'
+            ? initialWeeks * product.price
+            : product.price
+    };
+
+    document.getElementById('card-' + id).classList.add('in-cart');
 }
-cart[id].total = cart[id].days * cart[id].price;
-} else {
-if (invoiceType === 'rent') {
-cart[id] = {
-id: product.id,
-name: product.name,
-price: product.price,
-days: 1,
-qty: 1,
-total: product.price
-};
-} else {
-cart[id] = {
-id: product.id,
-name: product.name,
-price: product.price,
-days: 1,
-qty: 1,
-total: product.price
-};
 }
-document.getElementById('card-' + id).classList.add('in-cart');
-}
+
 renderCart();
 updateRentPrice();
 updateSalePrice();
@@ -1177,22 +1191,32 @@ checkAvailability();
 }
 }
 
+
 function changeDays(id, delta) {
-if (!cart[id]) return;
-if (invoiceType === 'sale') {
-showToast('لا يمكن تغيير الايام في فاتورة بيع', 'error');
-return;
-}
-var newDays = cart[id].days + delta;
-if (newDays < 1) { removeFromCart(id); return; }
-cart[id].days = newDays;
-cart[id].total = cart[id].days * cart[id].price;
-renderCart();
-calcModalTotals();
-if (invoiceType === 'rent') {
-updateRentDates();
-checkAvailability();
-}
+    if (!cart[id]) return;
+
+    if (invoiceType === 'sale') {
+        showToast('لا يمكن تغيير الأسابيع في فاتورة بيع', 'error');
+        return;
+    }
+
+    var newWeeks = cart[id].days + delta;
+
+    if (newWeeks < 1) {
+        removeFromCart(id);
+        return;
+    }
+
+    Object.keys(cart).forEach(function(key) {
+        cart[key].days = newWeeks;
+        cart[key].total = newWeeks * cart[key].price;
+    });
+
+    renderCart();
+    updateRentPrice();
+    updateRentDates();
+    calcModalTotals();
+    checkAvailability();
 }
 
 
