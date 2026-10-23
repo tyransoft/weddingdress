@@ -792,11 +792,11 @@ data-search="{{ product.name|lower }} {{ product.barcode|default:'' }}">
 </div>
 <div id="availability-message" class="availability-message"></div>
 <div class="rent-info-row">
-<span class="label">اجمالي الايام</span>
+<span class="label">اجمالي الاسابيع</span>
 <span class="value" id="modal-rent-days">0</span>
 </div>
 <div class="rent-info-row">
-<span class="label">السعر اليومي</span>
+<span class="label">السعر للاسبوع</span>
 <span class="value" id="modal-rent-price">0.00</span>
 </div>
 </div>
@@ -996,44 +996,34 @@ function getFirstProductId() {
     }
     return null;
 }
-
-
 function updateRentDates() {
     var startDateInput = document.getElementById('rent_start_date_input');
     var endDateInput = document.getElementById('rent_end_date_input');
 
     var startDate = startDateInput.value;
-    var keys = Object.keys(cart);
 
-    if (!startDate) {
-        return;
-    }
+    if (!startDate) return;
 
-    if (keys.length > 0 && invoiceType === 'rent') {
-        var firstItem = cart[keys[0]];
-        var days = parseInt(firstItem.days) || 1;
+    var start = new Date(startDate + 'T00:00:00');
 
-        document.getElementById('modal-rent-days').textContent = days;
-        document.getElementById('form_rent_days').value = days;
+    start.setDate(start.getDate() + 7);
 
-        var start = new Date(startDate + 'T00:00:00');
+    var year = start.getFullYear();
+    var month = String(start.getMonth() + 1).padStart(2, '0');
+    var day = String(start.getDate()).padStart(2, '0');
 
-        start.setDate(start.getDate() + days);
+    var endDate = year + '-' + month + '-' + day;
 
-        var year = start.getFullYear();
-        var month = String(start.getMonth() + 1).padStart(2, '0');
-        var day = String(start.getDate()).padStart(2, '0');
+    endDateInput.value = endDate;
+    endDateInput.min = endDate;
 
-        var endDate = year + '-' + month + '-' + day;
-
-        endDateInput.value = endDate;
-        endDateInput.min = startDate;
-
-        document.getElementById('form_rent_end_date').value = endDate;
-    }
+    document.getElementById('modal-rent-days').textContent = '7';
+    document.getElementById('form_rent_days').value = '7';
 
     document.getElementById('form_rent_start_date').value = startDate;
+    document.getElementById('form_rent_end_date').value = endDate;
 }
+
 var cart = {};
 var customers = [
 {% for customer in customers %}

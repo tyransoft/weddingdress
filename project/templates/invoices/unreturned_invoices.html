@@ -141,7 +141,7 @@
           {% for item in invoice.items.all %}
           <div class="pitem">
             <span>{{ item.product.name }}</span>
-            <span>{{ item.days|default:1 }} يوم</span>
+            <span>{{ item.days|default:1 }} اسبوع</span>
           </div>
           {% endfor %}
         </div>
