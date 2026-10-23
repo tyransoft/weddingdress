@@ -625,7 +625,7 @@ def reservation_detail(request, invoice_id):
     if reservation.rent_start_date and reservation.rent_end_date:
        rental_days = (
         reservation.rent_end_date - reservation.rent_start_date
-       ).days + 1
+       ).days 
 
        rental_weeks = (rental_days + 6) // 7
     items_data = []
