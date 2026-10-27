@@ -1404,7 +1404,6 @@ def create_invoice(request):
                         return redirect('invoice_list')
             
             invoice = Invoice()
-            invoice.invoice_number = invoice.generate_invoice_number()
             invoice.invoice_type = invoice_type
             invoice.created_by=request.user 
             customer_id = data.get('customer_id')
@@ -1422,6 +1421,12 @@ def create_invoice(request):
               except ValueError:
                   messages.error(request, 'صيغة تاريخ الإضافة غير صحيحة')
                   return redirect('invoice_list')   
+            else:
+                invoice.created_at = timezone.now()
+
+            invoice.invoice_number = Invoice.generate_invoice_number(
+                    invoice.created_at
+                 )              
             if is_cash_customer:
                 invoice.customer = None
             elif customer_id:
