@@ -649,7 +649,7 @@ class Invoice(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:
-            self.invoice_number = self.generate_invoice_number()
+            self.invoice_number = self.generate_invoice_number(self.created_at)
         
         
        
