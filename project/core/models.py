@@ -563,6 +563,8 @@ class Invoice(models.Model):
     status = models.CharField(max_length=20, choices=InvoiceStatus.choices, default=InvoiceStatus.PENDING, verbose_name='حالة الفاتورة') 
     notes = models.TextField(blank=True,verbose_name='ملاحظات')
     created_at = models.DateTimeField()
+    test_at = models.DateField(null=True,blank=True)
+
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
         CustomUser, 

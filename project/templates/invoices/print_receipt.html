@@ -372,6 +372,13 @@
         <strong>{{ invoice.payment_method.name }}</strong>
       </div>
       {% endif %}
+      {% if invoice.test_at %}
+      <div class="bottom-row">
+        <span> تاريخ البروفة:</span>
+        <strong>{{ invoice.test_at }}</strong>
+      </div>
+      {% endif %}
+
       <div class="bottom-row">
         <span>بطاقة الهوية:</span>
         <strong>{% if invoice.identity_verified %}تم الاستلام{% else %}لم تستلم{% endif %}</strong>

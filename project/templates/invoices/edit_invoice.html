@@ -210,6 +210,12 @@
                 <input type="date" name="rent_end_date" class="form-control"
                        value="{{ invoice.rent_end_date|date:'Y-m-d' }}" required>
             </div>
+               <div class="form-group">
+        <label class="form-label">تاريخ التجربة</label>
+        <input type="date" name="test_at" class="form-control"
+               value="{{ invoice.test_at|date:'Y-m-d' }}">
+    
+    </div>
         </div>
         {% endif %}
 

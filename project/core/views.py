@@ -549,38 +549,38 @@ def payment_method_toggle_status(request, pk):
     return redirect('payment_methods_list')
 
 
+
 @login_required
 def reservations_list(request):
     today = timezone.localdate()
 
     start_date = request.GET.get('start_date', '').strip()
     end_date = request.GET.get('end_date', '').strip()
-
+    test_at_filter = request.GET.get('test_at', '').strip()   
     reservations = (
-        Invoice.objects.all( )
+        Invoice.objects.all()
         .select_related('customer', 'payment_method')
         .prefetch_related('items__product')
     )
 
     if start_date:
         try:
-           
-
-            reservations = reservations.filter(
-                rent_start_date=start_date
-            )
+            reservations = reservations.filter(rent_start_date=start_date)
         except ValueError:
             start_date = ''
 
     if end_date:
         try:
-       
-
-            reservations = reservations.filter(
-                rent_start_date=end_date
-            )
+            reservations = reservations.filter(rent_start_date=end_date)
         except ValueError:
             end_date = ''
+
+    if test_at_filter:
+        try:
+            test_date_obj = datetime.strptime(test_at_filter, '%Y-%m-%d').date()
+            reservations = reservations.filter(test_at=test_date_obj)
+        except ValueError:
+            test_at_filter = ''
 
     total_pending = Invoice.objects.filter(
         status=InvoiceStatus.PENDING,
@@ -598,38 +598,33 @@ def reservations_list(request):
         'total_pending': total_pending,
         'today_reservations': today_reservations,
         'today': today.strftime('%Y-%m-%d'),
-        'start_date': start_date
-            if start_date else '',
-        'end_date': end_date
-            if end_date else '',
+        'start_date': start_date or '',
+        'end_date': end_date or '',
+        'test_at_filter': test_at_filter or '',   
         'is_today_filter': request.GET.get('today') == '1',
     }
-
     return render(request, 'reservations_list.html', context)
+
+
+
+from django.db.models import Sum
+from django.utils import timezone
+from datetime import datetime
+
 @login_required
 def reservation_detail(request, invoice_id):
     try:
-        reservation = Invoice.objects.get(
-            id=invoice_id
-        )
-        
-
-        
+        reservation = Invoice.objects.get(id=invoice_id)
     except Invoice.DoesNotExist:
         messages.error(request, 'الحجز غير موجود')
         return redirect('reservations_list')
     
     rental_days = 0
-    rental_weeks = 0
-
     if reservation.rent_start_date and reservation.rent_end_date:
-       rental_days = (
-        reservation.rent_end_date - reservation.rent_start_date
-       ).days 
-
-       rental_weeks = (rental_days + 6) // 7
+        rental_days = (reservation.rent_end_date - reservation.rent_start_date).days + 1
+    
     items_data = []
-    for item in reservation.items.all():  
+    for item in reservation.items.all():
         items_data.append({
             'item': item,
             'product': item.product,
@@ -638,16 +633,23 @@ def reservation_detail(request, invoice_id):
             'total_price': item.total_price,
         })
     
+    payments = reservation.customer_payments.select_related('created_by').order_by('-payment_date')
+    
+    total_paid_from_payments = payments.aggregate(
+        total=Sum('amount')
+    )['total'] or 0
+    
     context = {
         'reservation': reservation,
         'items_data': items_data,
-        'rental_days': rental_weeks,
+        'rental_days': rental_days,
         'total_items': reservation.items.count(),
+        'payments': payments,
+        'payments_count': payments.count(),
+        'total_paid_from_payments': total_paid_from_payments,
+        'today': timezone.now().date(),
     }
     return render(request, 'reservation_detail.html', context)
-
-
-
 
 @login_required
 def repair_list(request):
@@ -1485,7 +1487,14 @@ def create_invoice(request):
             
             invoice.notes = data.get('notes', '')
             invoice.identity_verified = data.get('identity_verified', 'true') in ['true', 'True', '1', 'on']
-            
+            test_at_str = data.get('test_at', '').strip()
+            if test_at_str:
+               try:
+                 invoice.test_at = datetime.strptime(test_at_str, '%Y-%m-%d').date()
+               except ValueError:
+                  invoice.test_at = None
+            else:
+               invoice.test_at = None
             invoice.save()
                    
             invoice.total_amount = Decimal('0')
@@ -3726,23 +3735,44 @@ def penalty_delete(request, pk):
     messages.success(request, 'تم حذف الغرامة وخصم مبلغها من الدفعة.')
     return redirect('customers_detail', pk=customer.pk) if customer else redirect('customers_list')
 
-
+@login_required
 def print_invoices_by_start_date(request):
-    start_date = request.GET.get('start_date')
-    date_obj = parse_date(start_date) if start_date else None
     
-    if date_obj:
-        invoices = Invoice.objects.filter(rent_start_date=date_obj).select_related(
-            'customer'
-        ).prefetch_related(
-            'items__product'
-        ).order_by('id')
-    else:
-        invoices = Invoice.objects.none()
+    mode = request.GET.get('mode', 'daily').strip()
+    value = request.GET.get('value', '').strip()
+
+    invoices = Invoice.objects.none()
+    display_value = value
+
+    if mode == 'daily' and value:
+        date_obj = parse_date(value)
+        if date_obj:
+            invoices = Invoice.objects.filter(
+                rent_start_date=date_obj
+            ).select_related('customer').prefetch_related('items__product').order_by('id')
+            display_value = date_obj
+        else:
+            mode = 'daily'
+
+    elif mode == 'monthly' and value:
+        try:
+            year, month = value.split('-')
+            year = int(year); month = int(month)
+            if 1 <= month <= 12:
+                invoices = Invoice.objects.filter(
+                    rent_start_date__year=year,
+                    rent_start_date__month=month,
+                ).select_related('customer').prefetch_related('items__product').order_by('rent_start_date', 'id')
+                display_value = f'{year}-{month:02d}'
+            else:
+                mode = 'daily'
+        except (ValueError, AttributeError):
+            mode = 'daily'
 
     context = {
         'invoices': invoices,
-        'start_date': date_obj or start_date,
+        'mode': mode,
+        'value': display_value,
+        'start_date': display_value if mode == 'daily' else None,
     }
-    
     return render(request, 'invoices_by_start_date_print.html', context)

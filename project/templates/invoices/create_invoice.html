@@ -271,27 +271,9 @@ color: #1e293b;
 display: flex;
 align-items: center;
 gap: 5px;
-}
-.cart-days-btn {
-width: 24px;
-height: 24px;
-border-radius: 6px;
-border: 1px solid #e5e7eb;
-background: #f9fafb;
-font-size: 14px;
-font-weight: 700;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-color: #374151;
-}
-.cart-days-btn:hover { background: #e5e7eb; }
-.cart-days-val {
-font-size: 14px;
-font-weight: 700;
-min-width: 22px;
-text-align: center;
+font-size: 12px;
+color: #6b7280;
+font-weight: 600;
 }
 .cart-item-total {
 font-size: 13px;
@@ -432,6 +414,7 @@ margin-top: 8px;
 transition: background 0.2s;
 }
 .modal-submit-btn:hover { background: #E6C76A; }
+.modal-submit-btn:disabled { background: #9ca3af; cursor: not-allowed; }
 
 .customer-info-box {
 background: #f0fdf4;
@@ -527,6 +510,7 @@ font-size: 13px;
 outline: none;
 transition: border-color 0.2s;
 background: #fff;
+box-sizing: border-box;
 }
 .rent-dates-grid .form-group input:focus {
 border-color: #D4AF37;
@@ -534,6 +518,12 @@ border-color: #D4AF37;
 .rent-dates-grid .form-group input:disabled {
 background: #f3f4f6;
 cursor: not-allowed;
+}
+.rent-dates-grid .form-group small {
+color: #6b7280;
+font-size: 11px;
+display: block;
+margin-top: 3px;
 }
 .rent-info-row {
 display: flex;
@@ -589,81 +579,56 @@ border: 1px solid #fcd34d;
 .rent-dates-grid .form-group { margin-bottom: 10px; }
 }
 .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin: 20px 0 120px;
-    direction: rtl;
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 12px;
+margin: 20px 0 120px;
+direction: rtl;
 }
-
 .page-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 9px 18px;
-    background: #D4AF37;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    transition: background 0.2s;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+padding: 9px 18px;
+background: #D4AF37;
+color: #fff;
+text-decoration: none;
+border-radius: 8px;
+font-size: 13px;
+font-weight: 700;
+transition: background 0.2s;
+border: none;
+cursor: pointer;
 }
-
 .page-btn:hover {
-    background: #E6C76A;
-}
-
-.page-info {
-    font-size: 13px;
-    font-weight: 600;
-    color: #475569;
+background: #E6C76A;
 }
 .product-search-form {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-    justify-content: center;
+display: flex;
+align-items: center;
+gap: 8px;
+flex: 1;
+justify-content: center;
 }
-
 .product-search-form input {
-    width: 60%;
-    max-width: 400px;
+width: 60%;
+max-width: 400px;
 }
-
-.page-btn {
-    padding: 10px 18px;
-    border: none;
-    border-radius: 8px;
-    background: #D4AF37;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.page-btn:hover {
-    background: #E6C76A;
-}
-
 @media (max-width: 600px) {
-    .page-search-bar {
-        flex-direction: column;
-    }
-
-    .product-search-form {
-        width: 100%;
-    }
-
-    .product-search-form input {
-        width: 100%;
-    }
+.page-search-bar {
+flex-direction: column;
+}
+.product-search-form {
+width: 100%;
+}
+.product-search-form input {
+width: 100%;
+}
 }
 </style>
-<form method="get" class="page-search-bar" id="product-search-form">
 
+<form method="get" class="page-search-bar" id="product-search-form">
     <input
         type="text"
         name="search"
@@ -673,12 +638,11 @@ border: 1px solid #fcd34d;
         autocomplete="off"
         autofocus
     >
-
     <button type="submit" class="page-btn">
         بحث
     </button>
-
 </form>
+
 <form method="post" id="sale-invoice-form" action="{% url 'create_invoice' %}">
 {% csrf_token %}
 
@@ -696,32 +660,22 @@ border: 1px solid #fcd34d;
 <input type="hidden" name="extra_amount" id="form_extra_amount" value="0">
 <input type="hidden" name="payment_method" id="form_payment_method" value="">
 <input type="hidden" name="created_date" id="form_created_date">
+<input type="hidden" name="test_at" id="form_test_at" value="">
 <input type="hidden" name="notes" id="form_notes" value="">
 <div id="form-products-container"></div>
 
 <div class="page-search-bar">
     <div class="search-type-group" id="type-selector">
         <label class="active-label" id="rent-label">
-<input type="radio"
-       name="invoice_type"
-       value="rent"
-       checked
-
-       onchange="toggleInvoiceType()">
+            <input type="radio" name="invoice_type" value="rent" checked onchange="toggleInvoiceType()">
             <span>ايجار</span>
         </label>
-
         <label id="sale-label">
-
-<input type="radio"
-       name="invoice_type"
-       value="sale"
-       onchange="toggleInvoiceType()">     
-              <span>بيع</span>
+            <input type="radio" name="invoice_type" value="sale" onchange="toggleInvoiceType()">
+            <span>بيع</span>
         </label>
     </div>
 </div>
-
 
 <div class="products-grid" id="products-grid">
 {% for product in products %}
@@ -788,12 +742,13 @@ data-search="{{ product.name|lower }} {{ product.barcode|default:'' }}">
 <div class="form-group">
 <label>تاريخ النهاية <span class="required">*</span></label>
 <input type="date" id="rent_end_date_input" class="form-control">
+<small>يمكن تنزيل التاريخ فقط (لا يمكن زيادته عن أسبوع) — السعر ثابت</small>
 </div>
 </div>
 <div id="availability-message" class="availability-message"></div>
 <div class="rent-info-row">
-<span class="label">اجمالي الاسابيع</span>
-<span class="value" id="modal-rent-days">0</span>
+<span class="label">المدة</span>
+<span class="value" id="modal-rent-days">أسبوع</span>
 </div>
 <div class="rent-info-row">
 <span class="label">السعر للاسبوع</span>
@@ -861,19 +816,20 @@ data-search="{{ product.name|lower }} {{ product.barcode|default:'' }}">
 <input type="checkbox" id="modal-identity-verified" checked> تأكيد استلام بطاقة الهوية
 </label>
 </div>
+
 <div class="form-group">
-    <label class="form-label">تاريخ الإضافة <span style="color:red;">*</span></label>
-    <input
-        type="date"
-        class="form-control"
-        id="modal-created-date"
-        value="{% now 'Y-m-d' %}"
-        required
-    >
+<label class="form-label">تاريخ البروفة</label>
+<input type="date" class="form-control" id="modal-test-at">
 </div>
+
 <div class="form-group">
-    <label class="form-label">ملاحظات <span style="color:red;">*</span></label>
-    <textarea class="form-control" id="modal-notes" rows="2" required></textarea>
+<label class="form-label">تاريخ الإضافة <span style="color:red;">*</span></label>
+<input type="date" class="form-control" id="modal-created-date" value="{% now 'Y-m-d' %}" required>
+</div>
+
+<div class="form-group">
+<label class="form-label">ملاحظات <span style="color:red;">*</span></label>
+<textarea class="form-control" id="modal-notes" rows="2" required></textarea>
 </div>
 
 <div class="order-summary-box" id="order-final-totals" style="margin-top:10px;"></div>
@@ -893,87 +849,449 @@ function normalizeArabic(text) {
         .replace(/[\u064B-\u065F\u0670ـ]/g, '')
         .replace(/\s+/g, ' ')
         .trim();
-}    
-document.addEventListener('DOMContentLoaded', function() {
-    toggleInvoiceType();
+}
 
-    var urlParams = new URLSearchParams(window.location.search);
-    var barcode = urlParams.get('barcode');
-    
-    if (barcode) {
-        var searchInput = document.getElementById('product-search');
-        if (searchInput) {
-            searchInput.value = barcode;
-            searchInput.dispatchEvent(new Event('input'));
-            
-            setTimeout(function() {
-                var cards = document.querySelectorAll('.product-card');
-                cards.forEach(function(card) {
-                    var cardBarcode = card.dataset.barcode || '';
-                    if (cardBarcode === barcode) {
-                        var productId = parseInt(card.dataset.id);
-                        addToCart(productId);
-                        showToast('تم اضافة المنتج: ' + card.dataset.name, 'success');
-                    }
-                });
-            }, 500);
+var cart = {};
+var customers = [
+{% for customer in customers %}
+{
+id: {{ customer.id }},
+full_name: "{{ customer.full_name|escapejs }}",
+phone: "{{ customer.phone|default:''|escapejs }}",
+debt_balance: {{ customer.calculate_debt|default:0 }}
+}{% if not forloop.last %},{% endif %}
+{% endfor %}
+];
+var selectedCustomer = null;
+var invoiceType = 'rent';
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+function formatDate(d) {
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+}
+
+/* ====== حساب الحد الأدنى/الأقصى لتاريخ النهاية ======
+   min = البداية + 1 يوم (لا يساوي البداية)
+   max = البداية + 7 أيام (لا يمكن زيادة المدة عن أسبوع)
+   الافتراضي = max (أسبوع)
+*/
+function getEndDateBounds(startDateStr) {
+    var start = new Date(startDateStr + 'T00:00:00');
+    var minD = new Date(start); minD.setDate(minD.getDate() + 1);
+    var maxD = new Date(start); maxD.setDate(maxD.getDate() + 7);
+    return { min: formatDate(minD), max: formatDate(maxD) };
+}
+
+function applyEndDateBounds() {
+    var startVal = document.getElementById('rent_start_date_input').value;
+    var endInput = document.getElementById('rent_end_date_input');
+    if (!startVal) {
+        endInput.removeAttribute('min');
+        endInput.removeAttribute('max');
+        return;
+    }
+    var bounds = getEndDateBounds(startVal);
+    endInput.min = bounds.min;
+    endInput.max = bounds.max;
+
+    // إذا كانت القيمة الحالية خارج النطاق، اضبطها على الحد الأقصى (أسبوع)
+    if (!endInput.value || endInput.value > bounds.max || endInput.value < bounds.min) {
+        endInput.value = bounds.max;
+    }
+}
+
+/* ====== ضبط التاريخ الافتراضي عند اختيار البداية ====== */
+function updateRentDates() {
+    var startInput = document.getElementById('rent_start_date_input');
+    var endInput = document.getElementById('rent_end_date_input');
+    var startVal = startInput.value;
+    if (!startVal) return;
+
+    var bounds = getEndDateBounds(startVal);
+    endInput.min = bounds.min;
+    endInput.max = bounds.max;
+
+    // افتراضياً: النهاية = البداية + 7 أيام
+    endInput.value = bounds.max;
+
+    // الأسعار ثابتة: أسبوع واحد لكل منتج
+    Object.keys(cart).forEach(function(key) {
+        cart[key].days = 1;
+        cart[key].total = 1 * cart[key].price;
+    });
+
+    document.getElementById('modal-rent-days').textContent = 'أسبوع';
+    document.getElementById('form_rent_days').value = '7';
+    document.getElementById('form_rent_start_date').value = startVal;
+    document.getElementById('form_rent_end_date').value = endInput.value;
+
+    renderCart();
+    updateRentPrice();
+    calcModalTotals();
+}
+
+/* ====== عند تعديل تاريخ النهاية يدوياً: تحقق فقط، لا تغيير للأسعار ====== */
+function onEndDateChange() {
+    var startVal = document.getElementById('rent_start_date_input').value;
+    var endInput = document.getElementById('rent_end_date_input');
+
+    if (!startVal) {
+        showToast('حدد تاريخ البداية أولاً', 'error');
+        endInput.value = '';
+        return;
+    }
+
+    var bounds = getEndDateBounds(startVal);
+
+    if (endInput.value < bounds.min) {
+        showToast('تاريخ النهاية يجب أن يكون بعد تاريخ البداية', 'error');
+        endInput.value = bounds.min;
+    } else if (endInput.value > bounds.max) {
+        showToast('لا يمكن زيادة المدة عن أسبوع', 'error');
+        endInput.value = bounds.max;
+    }
+
+    // لا نلمس الأسعار — فقط نحدّث الحقول المخفية
+    document.getElementById('form_rent_end_date').value = endInput.value;
+    document.getElementById('form_rent_days').value = '7';
+    document.getElementById('modal-rent-days').textContent = 'أسبوع';
+
+    checkAvailability();
+}
+
+/* ====== دوال الفاتورة ====== */
+function toggleInvoiceType() {
+    var rentRadio = document.querySelector('input[name="invoice_type"][value="rent"]');
+    var saleRadio = document.querySelector('input[name="invoice_type"][value="sale"]');
+    var rentLabel = document.getElementById('rent-label');
+    var saleLabel = document.getElementById('sale-label');
+    var salePriceGroup = document.getElementById('sale-price-group');
+    var rentSection = document.getElementById('rent-dates-section');
+
+    if (rentRadio && rentRadio.checked) {
+        invoiceType = 'rent';
+        rentLabel.classList.add('active-label');
+        saleLabel.classList.remove('active-label');
+        salePriceGroup.style.display = 'none';
+        rentSection.style.display = 'block';
+        renderCart();
+        updateRentPrice();
+        applyEndDateBounds();
+    } else {
+        invoiceType = 'sale';
+        saleLabel.classList.add('active-label');
+        rentLabel.classList.remove('active-label');
+        salePriceGroup.style.display = 'block';
+        rentSection.style.display = 'none';
+        renderCart();
+
+        var keys = Object.keys(cart);
+        if (keys.length > 0) {
+            var saleInput = document.getElementById('sale_price_display');
+            saleInput.value = cart[keys[0]].price;
+            document.getElementById('form_sale_price').value = cart[keys[0]].price;
+        }
+        updateSalePrice();
+    }
+    calcModalTotals();
+}
+
+function updateRentPrice() {
+    var keys = Object.keys(cart);
+    if (keys.length > 0) {
+        var firstItem = cart[keys[0]];
+        document.getElementById('form_rent_price_per_day').value = firstItem.price.toFixed(2);
+        document.getElementById('modal-rent-price').textContent = firstItem.price.toFixed(2);
+    }
+}
+
+function updateSalePrice() {
+    var saleInput = document.getElementById('sale_price_display');
+    var salePrice = parseFloat(saleInput.value) || 0;
+    document.getElementById('form_sale_price').value = salePrice;
+    calcModalTotals();
+}
+
+function showToast(msg, type) {
+    var bg = type === 'success' ? '#22c55e' : '#ef4444';
+    var el = document.createElement('div');
+    el.className = 'alert-toast';
+    el.style.background = bg;
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(function() { el.remove(); }, 2600);
+}
+
+function getProductData(id) {
+    var card = document.getElementById('card-' + id);
+    if (!card) return null;
+    return {
+        id: parseInt(card.dataset.id),
+        name: card.dataset.name,
+        price: parseFloat(card.dataset.price),
+        status: card.dataset.status,
+        barcode: card.dataset.barcode
+    };
+}
+
+function addToCart(id) {
+    var product = getProductData(id);
+    if (!product) return;
+
+    if (invoiceType === 'rent') {
+        if (product.status === 'sold') {
+            showToast('المنتج تم بيعه ولا يمكن تأجيره', 'error');
+            return;
         }
     }
-    
-    var today = new Date().toISOString().split('T')[0];
-    
-    document.getElementById('rent_start_date_input').value = today;
-    document.getElementById('rent_end_date_input').min = today;
- updateRentDates();
-checkAvailability();   
-document.getElementById('rent_start_date_input').addEventListener('change', function() {
-    updateRentDates();
-    checkAvailability();
-});
 
-document.getElementById('rent_end_date_input').addEventListener('change', function() {
-    updateRentDays();
-    checkAvailability();
-});
-    
-    document.getElementById('product-search').addEventListener('input', function() {
-        var q = normalizeArabic(this.value);
-        var cards = document.querySelectorAll('.product-card');
-        var visible = 0;
-        cards.forEach(function(card) {
-        var searchStr = normalizeArabic(card.dataset.search || '');
-        if (!q || searchStr.includes(q)) {
-            card.classList.remove('hidden-card');
-                visible++;
-            } else {
-                card.classList.add('hidden-card');
-            }
-        });
-        document.getElementById('no-results').style.display = (visible === 0 && q) ? 'block' : 'none';
+    if (cart[id]) {
+        if (invoiceType === 'sale') {
+            cart[id].qty += 1;
+            cart[id].total = cart[id].qty * cart[id].price;
+        } else {
+            // في الإيجار: السعر ثابت على أسبوع — لا زيادة كمية
+            showToast('المنتج موجود بالسلة (أسبوع واحد)', 'error');
+            return;
+        }
+    } else {
+        cart[id] = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            days: 1,                 // أسبوع واحد ثابت
+            qty: 1,
+            total: product.price     // سعر أسبوع واحد
+        };
+        document.getElementById('card-' + id).classList.add('in-cart');
+    }
+
+    renderCart();
+    updateRentPrice();
+    updateSalePrice();
+    showToast('تمت الاضافة: ' + product.name, 'success');
+
+    if (invoiceType === 'rent') {
+        checkAvailability();
+    }
+}
+
+function removeFromCart(id) {
+    delete cart[id];
+    var card = document.getElementById('card-' + id);
+    if (card) card.classList.remove('in-cart');
+    renderCart();
+    updateRentPrice();
+    updateSalePrice();
+    if (invoiceType === 'rent') {
+        checkAvailability();
+    }
+}
+
+function cartTotal() {
+    if (invoiceType === 'sale') {
+        var salePrice = parseFloat(document.getElementById('sale_price_display').value) || 0;
+        return salePrice;
+    }
+    return Object.values(cart).reduce(function(total, product) {
+        return total + product.total;
+    }, 0);
+}
+
+function cartCount() {
+    if (invoiceType === 'rent') {
+        return Object.keys(cart).length;
+    }
+    return Object.values(cart).reduce(function(s, p) { return s + p.qty; }, 0);
+}
+
+function renderCart() {
+    var keys = Object.keys(cart);
+    var fc = document.getElementById('floating-cart');
+    var body = document.getElementById('cart-body');
+    var countEl = document.getElementById('cart-count');
+    var totalEl = document.getElementById('cart-grand-total');
+
+    countEl.textContent = cartCount();
+    totalEl.textContent = cartTotal().toFixed(2);
+
+    body.innerHTML = '';
+    if (keys.length === 0) {
+        fc.classList.remove('visible');
+        return;
+    }
+    fc.classList.add('visible');
+
+    keys.forEach(function(k) {
+        var p = cart[k];
+        var row = document.createElement('div');
+        row.className = 'cart-item';
+
+        var qtyDisplay = '';
+        if (invoiceType === 'rent') {
+            qtyDisplay = '<div class="cart-item-days">أسبوع</div>';
+        } else {
+            qtyDisplay = '<div class="cart-item-days">×' + p.qty + '</div>';
+        }
+
+        row.innerHTML =
+            '<span class="cart-item-name">' + p.name + '</span>' +
+            qtyDisplay +
+            '<span class="cart-item-total">' + p.total.toFixed(2) + '</span>' +
+            '<button class="cart-remove-btn" type="button" onclick="removeFromCart(' + p.id + ')">&#10005;</button>';
+        body.appendChild(row);
     });
+}
+
+document.getElementById('cart-toggle-btn').addEventListener('click', function() {
+    var body = document.getElementById('cart-body');
+    var footer = document.getElementById('cart-footer');
+    body.classList.toggle('collapsed');
+    footer.style.display = body.classList.contains('collapsed') ? 'none' : '';
+    this.textContent = body.classList.contains('collapsed') ? '\u2303' : '\u2964';
 });
 
-var selectedProductId = null;
+function calcModalTotals() {
+    var subtotal = cartTotal();
+    var discount = parseFloat(document.getElementById('modal-discount').value) || 0;
+    var extraAmount = parseFloat(document.getElementById('modal-extra-amount').value) || 0;
+    var pmSel = document.getElementById('modal-payment-method');
+    var pmOpt = pmSel.options[pmSel.selectedIndex];
+    var incPct = parseFloat(pmOpt ? pmOpt.dataset.increase : 0) || 0;
+
+    var afterDiscount = subtotal - discount;
+    if (afterDiscount < 0) afterDiscount = 0;
+
+    var fees = afterDiscount * incPct / 100;
+    var total = afterDiscount + fees + extraAmount;
+
+    var html = '<div class="os-row"><span>المجموع الفرعي</span><span>' + subtotal.toFixed(2) + '</span></div>' +
+    '<div class="os-row"><span>الخصم</span><span>' + discount.toFixed(2) + '</span></div>' +
+    '<div class="os-row"><span>رسوم طريقة الدفع</span><span>' + fees.toFixed(2) + '</span></div>' +
+    '<div class="os-row"><span>الرسوم الإضافية</span><span>' + extraAmount.toFixed(2) + '</span></div>' +
+    '<div class="os-row total"><span>الاجمالي</span><span>' + total.toFixed(2) + '</span></div>';
+
+    document.getElementById('order-summary-box').innerHTML = html;
+    document.getElementById('order-final-totals').innerHTML = html;
+    document.getElementById('form_extra_amount').value = extraAmount.toFixed(2);
+}
+
+function openOrderModal() {
+    if (Object.keys(cart).length === 0) {
+        showToast('السلة فارغة', 'error');
+        return;
+    }
+    var invoiceTypeRadio = document.querySelector('input[name="invoice_type"]:checked');
+    if (!invoiceTypeRadio) {
+        showToast('الرجاء اختيار نوع الفاتورة', 'error');
+        return;
+    }
+
+    if (invoiceType === 'sale') {
+        var saleInput = document.getElementById('sale_price_display');
+        if (parseFloat(saleInput.value) === 0) {
+            var keys = Object.keys(cart);
+            if (keys.length > 0) {
+                saleInput.value = cart[keys[0]].price;
+                document.getElementById('form_sale_price').value = cart[keys[0]].price;
+            }
+        }
+    }
+
+    applyEndDateBounds();
+    calcModalTotals();
+    document.getElementById('order-modal-overlay').classList.add('visible');
+}
+
+function closeOrderModal() {
+    document.getElementById('order-modal-overlay').classList.remove('visible');
+}
+
+document.getElementById('order-modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeOrderModal();
+});
+
+function toggleCustomerSection() {
+    var isCash = document.getElementById('modal-is-cash').checked;
+    var sec = document.getElementById('modal-customer-section');
+    sec.style.display = isCash ? 'none' : '';
+    if (isCash) {
+        selectedCustomer = null;
+        document.getElementById('modal-customer-search').value = '';
+        document.getElementById('modal-customer-info').style.display = 'none';
+        document.getElementById('modal-customer-dropdown').style.display = 'none';
+        document.getElementById('form_is_cash').value = '1';
+    } else {
+        document.getElementById('form_is_cash').value = '0';
+    }
+}
+
+document.getElementById('modal-customer-search').addEventListener('input', function() {
+    var q = normalizeArabic(this.value);
+    var dd = document.getElementById('modal-customer-dropdown');
+
+    if (q.length < 1) {
+        dd.style.display = 'none';
+        return;
+    }
+
+    var rawVal = this.value.trim();
+    var results = customers.filter(function(c) {
+        return normalizeArabic(c.full_name).includes(q) ||
+            (c.phone && c.phone.includes(rawVal));
+    }).slice(0, 10);
+
+    if (results.length === 0) { dd.style.display = 'none'; return; }
+    dd.innerHTML = '';
+    results.forEach(function(c) {
+        var item = document.createElement('div');
+        item.className = 'search-drop-item';
+        item.innerHTML = '<div class="sdi-name">' + c.full_name + '</div>' +
+        '<div class="sdi-sub">الهاتف: ' + (c.phone || '-') +
+        ' | دين: ' + parseFloat(c.debt_balance).toFixed(2) + '</div>';
+        item.addEventListener('click', function() { selectCustomer(c); });
+        dd.appendChild(item);
+    });
+    dd.style.display = 'block';
+});
+
+function selectCustomer(c) {
+    selectedCustomer = c;
+    document.getElementById('modal-customer-search').value = c.full_name;
+    document.getElementById('modal-customer-dropdown').style.display = 'none';
+    document.getElementById('mci-name').textContent = c.full_name;
+    document.getElementById('mci-phone').textContent = c.phone || '-';
+    document.getElementById('mci-debt').textContent = parseFloat(c.debt_balance).toFixed(2);
+    document.getElementById('modal-customer-info').style.display = 'block';
+    document.getElementById('form_customer_id').value = c.id;
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#modal-customer-search') && !e.target.closest('#modal-customer-dropdown')) {
+        document.getElementById('modal-customer-dropdown').style.display = 'none';
+    }
+});
 
 function checkAvailability() {
     var productId = getFirstProductId();
     var startDate = document.getElementById('rent_start_date_input').value;
     var endDate = document.getElementById('rent_end_date_input').value;
     var msgDiv = document.getElementById('availability-message');
-    
+
     if (!productId || !startDate || !endDate) {
         msgDiv.className = 'availability-message';
         msgDiv.style.display = 'none';
         return;
     }
-    
+
     msgDiv.className = 'availability-message checking';
     msgDiv.textContent = 'جاري التحقق من التوفر...';
     msgDiv.style.display = 'block';
-    
+
     fetch('/api/check-product-availability/?product_id=' + productId + '&start_date=' + startDate + '&end_date=' + endDate)
-    .then(response => response.json())
-    .then(data => {
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
         if (data.available) {
             msgDiv.className = 'availability-message available';
             msgDiv.textContent = 'المنتج متاح في هذه الفترة';
@@ -996,674 +1314,249 @@ function getFirstProductId() {
     return null;
 }
 
-function updateRentDates() {
-    var startDateInput = document.getElementById('rent_start_date_input');
-    var endDateInput = document.getElementById('rent_end_date_input');
-
-    var startDate = startDateInput.value;
-    if (!startDate) return;
-
-    var keys = Object.keys(cart);
-    var weeks = keys.length > 0 ? cart[keys[0]].days : 1;
-
-    var start = new Date(startDate + 'T00:00:00');
-    start.setDate(start.getDate() + (weeks * 7));
-
-    var year = start.getFullYear();
-    var month = String(start.getMonth() + 1).padStart(2, '0');
-    var day = String(start.getDate()).padStart(2, '0');
-
-    var endDate = year + '-' + month + '-' + day;
-
-    endDateInput.value = endDate;
-    endDateInput.min = endDate;
-
-    document.getElementById('modal-rent-days').textContent = weeks;
-    document.getElementById('form_rent_days').value = weeks * 7;
-
-    document.getElementById('form_rent_start_date').value = startDate;
-    document.getElementById('form_rent_end_date').value = endDate;
-}
-
-var cart = {};
-var customers = [
-{% for customer in customers %}
-{
-id: {{ customer.id }},
-full_name: "{{ customer.full_name|escapejs }}",
-phone: "{{ customer.phone|default:''|escapejs }}",
-debt_balance: {{ customer.calculate_debt|default:0 }}
-}{% if not forloop.last %},{% endif %}
-{% endfor %}
-];
-var selectedCustomer = null;
-var invoiceType = 'rent';
-
-function toggleInvoiceType() {
-    var rentRadio = document.querySelector('input[name="invoice_type"][value="rent"]');
-    var saleRadio = document.querySelector('input[name="invoice_type"][value="sale"]');
-    var rentLabel = document.getElementById('rent-label');
-    var saleLabel = document.getElementById('sale-label');
-    var salePriceGroup = document.getElementById('sale-price-group');
-    var rentSection = document.getElementById('rent-dates-section');
-
-    if (rentRadio && rentRadio.checked) {
-        invoiceType = 'rent';
-        rentLabel.classList.add('active-label');
-        saleLabel.classList.remove('active-label');
-        salePriceGroup.style.display = 'none';
-        rentSection.style.display = 'block';
-        renderCart();
-        updateRentPrice();
-    } else {
-        invoiceType = 'sale';
-        saleLabel.classList.add('active-label');
-        rentLabel.classList.remove('active-label');
-        salePriceGroup.style.display = 'block';
-        rentSection.style.display = 'none';
-        renderCart();
-        
-        var keys = Object.keys(cart);
-        if (keys.length > 0) {
-            var saleInput = document.getElementById('sale_price_display');
-            saleInput.value = cart[keys[0]].price;
-            document.getElementById('form_sale_price').value = cart[keys[0]].price;
-        }
-        updateSalePrice();
-    }
-    calcModalTotals();
-}
-
-
-function updateRentPrice() {
-    var keys = Object.keys(cart);
-
-    if (keys.length > 0) {
-        var firstItem = cart[keys[0]];
-
-        document.getElementById('form_rent_price_per_day').value =
-            firstItem.price.toFixed(2);
-
-        document.getElementById('modal-rent-price').textContent =
-            firstItem.price.toFixed(2);
-    }
-}
-
-
-function updateSalePrice() {
-    var saleInput = document.getElementById('sale_price_display');
-    var salePrice = parseFloat(saleInput.value) || 0;
-    
-    document.getElementById('form_sale_price').value = salePrice;
-    
-    calcModalTotals();
-}
-
-function showToast(msg, type) {
-var bg = type === 'success' ? '#22c55e' : '#ef4444';
-var el = document.createElement('div');
-el.className = 'alert-toast';
-el.style.background = bg;
-el.textContent = msg;
-document.body.appendChild(el);
-setTimeout(function() { el.remove(); }, 2600);
-}
-
-function getProductData(id) {
-var card = document.getElementById('card-' + id);
-if (!card) return null;
-return {
-id: parseInt(card.dataset.id),
-name: card.dataset.name,
-price: parseFloat(card.dataset.price),
-status: card.dataset.status,
-barcode: card.dataset.barcode
-};
-}
-
-function addToCart(id) {
-var product = getProductData(id);
-if (!product) return;
-    if (invoiceType === 'rent') {
-       
-        if (product.status === 'sold') {
-            showToast('المنتج تم بيعه ولا يمكن تأجيره', 'error');
-            return;
-        }
-    }
-if (cart[id]) {
-    if (invoiceType === 'rent') {
-        var newWeeks = cart[id].days + 1;
-
-        Object.keys(cart).forEach(function(key) {
-            cart[key].days = newWeeks;
-            cart[key].total = newWeeks * cart[key].price;
-        });
-    } else {
-        cart[id].qty += 1;
-        cart[id].total = cart[id].qty * cart[id].price;
-    }
-} else {
-    var initialWeeks = 1;
-
-    if (invoiceType === 'rent' && Object.keys(cart).length > 0) {
-        initialWeeks = cart[Object.keys(cart)[0]].days;
-    }
-
-    cart[id] = {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        days: initialWeeks,
-        qty: 1,
-        total: invoiceType === 'rent'
-            ? initialWeeks * product.price
-            : product.price
-    };
-
-    document.getElementById('card-' + id).classList.add('in-cart');
-}
-
-
-renderCart();
-updateRentPrice();
-updateSalePrice();
-showToast('تمت الاضافة: ' + product.name, 'success');
-if (invoiceType === 'rent') {
-
-updateRentDates();
-checkAvailability();
-}
-}
-
-function removeFromCart(id) {
-delete cart[id];
-var card = document.getElementById('card-' + id);
-if (card) card.classList.remove('in-cart');
-renderCart();
-updateRentPrice();
-updateSalePrice();
-if (invoiceType === 'rent') {
-
-updateRentDates();
-checkAvailability();
-}
-}
-
-
-function changeDays(id, delta) {
-    if (!cart[id]) return;
-
-    if (invoiceType === 'sale') {
-        showToast('لا يمكن تغيير الأسابيع في فاتورة بيع', 'error');
+function submitOrder() {
+    var isCash = document.getElementById('modal-is-cash').checked;
+    if (!isCash && !selectedCustomer) {
+        showToast('الرجاء اختيار عميل او تحديد عميل نقدي', 'error');
         return;
     }
 
-    var newWeeks = cart[id].days + delta;
-
-    if (newWeeks < 1) {
-        removeFromCart(id);
+    var notes = document.getElementById('modal-notes').value.trim();
+    if (!notes) {
+        showToast('الرجاء ادخال ملاحظة', 'error');
         return;
     }
 
-    Object.keys(cart).forEach(function(key) {
-        cart[key].days = newWeeks;
-        cart[key].total = newWeeks * cart[key].price;
-    });
-
-    renderCart();
-    updateRentPrice();
-    updateRentDates();
-    calcModalTotals();
-    checkAvailability();
-}
-
-
-function cartTotal() {
-    if (invoiceType === 'sale') {
-        var salePrice = parseFloat(
-            document.getElementById('sale_price_display').value
-        ) || 0;
-        return salePrice;
-    }
-
-    return Object.values(cart).reduce(function(total, product) {
-        return total + product.total;
-    }, 0);
-}
-
-function cartCount() {
-if (invoiceType === 'rent') {
-return Object.values(cart).reduce(function(s, p) { return s + p.days; }, 0);
-} else {
-return Object.values(cart).reduce(function(s, p) { return s + p.qty; }, 0);
-}
-}
-
-function updateRentDays() {
-    var startDate = document.getElementById('rent_start_date_input').value;
-    var endDate = document.getElementById('rent_end_date_input').value;
-
-    var weeksDisplay = document.getElementById('modal-rent-days');
-    var daysInput = document.getElementById('form_rent_days');
-
-    if (!startDate || !endDate) {
-        weeksDisplay.textContent = '0';
-        daysInput.value = '0';
-        return;
-    }
-
-    var start = new Date(startDate + 'T00:00:00');
-    var end = new Date(endDate + 'T00:00:00');
-
-    var diff = Math.round(
-        (end - start) / (1000 * 60 * 60 * 24)
-    );
-
-    if (diff <= 0) {
-        weeksDisplay.textContent = '0';
-        daysInput.value = '0';
-        return;
-    }
-
-    var weeks = Math.ceil(diff / 7);
-
-    weeksDisplay.textContent = weeks;
-
-    daysInput.value = diff;
-}
-function renderCart() {
-var keys = Object.keys(cart);
-var fc = document.getElementById('floating-cart');
-var body = document.getElementById('cart-body');
-var countEl = document.getElementById('cart-count');
-var totalEl = document.getElementById('cart-grand-total');
-
-countEl.textContent = cartCount();
-totalEl.textContent = cartTotal().toFixed(2);
-
-body.innerHTML = '';
-if (keys.length === 0) {
-fc.classList.remove('visible');
-return;
-}
-fc.classList.add('visible');
-
-keys.forEach(function(k) {
-var p = cart[k];
-var row = document.createElement('div');
-row.className = 'cart-item';
-
-var qtyDisplay = '';
-if (invoiceType === 'rent') {
-qtyDisplay = 
-'<div class="cart-item-days">' +
-'<button class="cart-days-btn" type="button" onclick="changeDays(' + p.id + ',-1)">-</button>' +
-'<span class="cart-days-val">' + p.days + '</span>' +
-'<button class="cart-days-btn" type="button" onclick="changeDays(' + p.id + ',1)">+</button>' +
-'</div>';
-} else {
-qtyDisplay = 
-'<div class="cart-item-days">' +
-'<span class="cart-days-val">' + p.qty + '</span>' +
-'</div>';
-}
-
-row.innerHTML =
-'<span class="cart-item-name">' + p.name + '</span>' +
-qtyDisplay +
-'<span class="cart-item-total">' + p.total.toFixed(2) + '</span>' +
-'<button class="cart-remove-btn" type="button" onclick="removeFromCart(' + p.id + ')">&#10005;</button>';
-body.appendChild(row);
-});
-}
-
-document.getElementById('cart-toggle-btn').addEventListener('click', function() {
-var body = document.getElementById('cart-body');
-var footer = document.getElementById('cart-footer');
-body.classList.toggle('collapsed');
-footer.style.display = body.classList.contains('collapsed') ? 'none' : '';
-this.textContent = body.classList.contains('collapsed') ? '\u2303' : '\u2964';
-});
-function calcModalTotals() {
-    var subtotal = cartTotal();
-    var discount = parseFloat(document.getElementById('modal-discount').value) || 0;
-    var extraAmount = parseFloat(document.getElementById('modal-extra-amount').value) || 0;
-    var pmSel = document.getElementById('modal-payment-method');
-    var pmOpt = pmSel.options[pmSel.selectedIndex];
-    var incPct = parseFloat(pmOpt ? pmOpt.dataset.increase : 0) || 0;
-
-    var afterDiscount = subtotal - discount;
-    if (afterDiscount < 0) afterDiscount = 0;
-    
-    var fees = afterDiscount * incPct / 100;
-    var total = afterDiscount + fees + extraAmount;
-
-    var html = '<div class="os-row"><span>المجموع الفرعي</span><span>' + subtotal.toFixed(2) + '</span></div>' +
-    '<div class="os-row"><span>الخصم</span><span>' + discount.toFixed(2) + '</span></div>' +
-    '<div class="os-row"><span>رسوم اضافية</span><span>' + fees.toFixed(2) + '</span></div>' +
-    '<div class="os-row"><span>الرسوم الإضافية</span><span>' + extraAmount.toFixed(2) + '</span></div>' +
-    '<div class="os-row total"><span>الاجمالي</span><span>' + total.toFixed(2) + '</span></div>';
-
-    document.getElementById('order-summary-box').innerHTML = html;
-    document.getElementById('order-final-totals').innerHTML = html;
-
-    document.getElementById('form_extra_amount').value = extraAmount.toFixed(2);
-}
-
-
-function openOrderModal() {
     if (Object.keys(cart).length === 0) {
         showToast('السلة فارغة', 'error');
         return;
     }
+
     var invoiceTypeRadio = document.querySelector('input[name="invoice_type"]:checked');
     if (!invoiceTypeRadio) {
         showToast('الرجاء اختيار نوع الفاتورة', 'error');
         return;
     }
-    
-    if (invoiceType === 'sale') {
-        var saleInput = document.getElementById('sale_price_display');
-        if (parseFloat(saleInput.value) === 0) {
-            var keys = Object.keys(cart);
-            if (keys.length > 0) {
-                saleInput.value = cart[keys[0]].price;
-                document.getElementById('form_sale_price').value = cart[keys[0]].price;
-            }
+
+    var invoiceTypeValue = invoiceTypeRadio.value;
+
+    if (isCash) {
+        var subtotal = cartTotal();
+        var discount = parseFloat(document.getElementById('modal-discount').value) || 0;
+        var extraAmount = parseFloat(document.getElementById('modal-extra-amount').value) || 0;
+        var paidAmount = parseFloat(document.getElementById('modal-paid-amount').value) || 0;
+
+        var paymentMethod = document.getElementById('modal-payment-method');
+        var selectedOption = paymentMethod.options[paymentMethod.selectedIndex];
+        var increasePercentage = parseFloat(selectedOption ? selectedOption.dataset.increase : 0) || 0;
+
+        var total = (subtotal - discount);
+        total += total * increasePercentage / 100;
+        total += extraAmount;
+
+        if (discount < 0 || discount > subtotal) {
+            showToast('الخصم غير صحيح', 'error');
+            return;
+        }
+
+        if (paidAmount < total) {
+            showToast('العميل النقدي يجب أن يدفع كامل المبلغ: ' + total.toFixed(2) + ' د.ل', 'error');
+            return;
         }
     }
-    
-    calcModalTotals();
-    document.getElementById('order-modal-overlay').classList.add('visible');
-}
 
-function closeOrderModal() {
-document.getElementById('order-modal-overlay').classList.remove('visible');
-}
+    if (invoiceTypeValue === 'rent') {
+        var startDate = document.getElementById('rent_start_date_input');
+        var endDate = document.getElementById('rent_end_date_input');
+        var rentSection = document.getElementById('rent-dates-section');
+        var msgDiv = document.getElementById('availability-message');
 
-document.getElementById('order-modal-overlay').addEventListener('click', function(e) {
-if (e.target === this) closeOrderModal();
-});
+        if (rentSection.style.display === 'none') {
+            showToast('الرجاء التأكد من اختيار نوع الفاتورة ايجار', 'error');
+            return;
+        }
 
-function toggleCustomerSection() {
-var isCash = document.getElementById('modal-is-cash').checked;
-var sec = document.getElementById('modal-customer-section');
-sec.style.display = isCash ? 'none' : '';
-if (isCash) {
-selectedCustomer = null;
-document.getElementById('modal-customer-search').value = '';
-document.getElementById('modal-customer-info').style.display = 'none';
-document.getElementById('modal-customer-dropdown').style.display = 'none';
-document.getElementById('form_is_cash').value = '1';
-} else {
-document.getElementById('form_is_cash').value = '0';
-}
-}
+        if (!startDate || !startDate.value) {
+            showToast('الرجاء تحديد تاريخ البداية', 'error');
+            return;
+        }
+        if (!endDate || !endDate.value) {
+            showToast('الرجاء تحديد تاريخ النهاية', 'error');
+            return;
+        }
 
-document.getElementById('modal-customer-search').addEventListener('input', function() {
-var q = normalizeArabic(this.value);
-var dd = document.getElementById('modal-customer-dropdown');
+        var bounds = getEndDateBounds(startDate.value);
+        if (endDate.value < bounds.min) {
+            showToast('تاريخ النهاية يجب أن يكون بعد تاريخ البداية', 'error');
+            return;
+        }
+        if (endDate.value > bounds.max) {
+            showToast('لا يمكن زيادة المدة عن أسبوع', 'error');
+            return;
+        }
 
-if (q.length < 1) {
-    dd.style.display = 'none';
-    return;
-}
+        if (msgDiv.classList.contains('unavailable')) {
+            showToast('المنتج غير متاح في هذه الفترة', 'error');
+            return;
+        }
+    }
 
-var results = customers.filter(function(c) {
-    return normalizeArabic(c.full_name).includes(q) ||
-        (c.phone && c.phone.includes(this.value.trim()));
-}, this).slice(0, 10);
-if (results.length === 0) { dd.style.display = 'none'; return; }
-dd.innerHTML = '';
-results.forEach(function(c) {
-var item = document.createElement('div');
-item.className = 'search-drop-item';
-item.innerHTML = '<div class="sdi-name">' + c.full_name + '</div>' +
-'<div class="sdi-sub">الهاتف: ' + (c.phone || '-') +
-' | دين: ' + parseFloat(c.debt_balance).toFixed(2) + '</div>';
-item.addEventListener('click', function() {
-selectCustomer(c);
-});
-dd.appendChild(item);
-});
-dd.style.display = 'block';
-});
+    if (invoiceTypeValue === 'sale') {
+        var salePrice = parseFloat(document.getElementById('sale_price_display').value) || 0;
+        var paidAmountS = parseFloat(document.getElementById('modal-paid-amount').value) || 0;
+        var discountS = parseFloat(document.getElementById('modal-discount').value) || 0;
+        var extraAmountS = parseFloat(document.getElementById('modal-extra-amount').value) || 0;
 
-function selectCustomer(c) {
-selectedCustomer = c;
-document.getElementById('modal-customer-search').value = c.full_name;
-document.getElementById('modal-customer-dropdown').style.display = 'none';
-document.getElementById('mci-name').textContent = c.full_name;
-document.getElementById('mci-phone').textContent = c.phone || '-';
-document.getElementById('mci-debt').textContent = parseFloat(c.debt_balance).toFixed(2);
-document.getElementById('modal-customer-info').style.display = 'block';
-document.getElementById('form_customer_id').value = c.id;
-}
+        if (salePrice < 0 || discountS < 0 || discountS > salePrice) {
+            showToast('يرجى التأكد من سعر البيع والخصم', 'error');
+            return;
+        }
 
-document.addEventListener('click', function(e) {
-if (!e.target.closest('#modal-customer-search') && !e.target.closest('#modal-customer-dropdown')) {
-document.getElementById('modal-customer-dropdown').style.display = 'none';
-}
-});
+        var paymentMethodS = document.getElementById('modal-payment-method');
+        var optionS = paymentMethodS.options[paymentMethodS.selectedIndex];
+        var increaseS = parseFloat(optionS ? optionS.dataset.increase : 0) || 0;
 
-function submitOrder() {
-var isCash = document.getElementById('modal-is-cash').checked;
-if (!isCash && !selectedCustomer) {
-showToast('الرجاء اختيار عميل او تحديد عميل نقدي', 'error');
-return;
-}
-var notes = document.getElementById('modal-notes').value.trim();
-if (!notes) {
-    showToast('الرجاء ادخال ملاحظة', 'error');
-    return;
-}
-if (Object.keys(cart).length === 0) {
-showToast('السلة فارغة', 'error');
-return;
-}
+        var totalS = ((salePrice - discountS) * (1 + increaseS / 100)) + extraAmountS;
 
-var invoiceTypeRadio = document.querySelector('input[name="invoice_type"]:checked');
-if (!invoiceTypeRadio) {
-showToast('الرجاء اختيار نوع الفاتورة', 'error');
-return;
-}
+        if (paidAmountS > totalS) {
+            showToast('المبلغ المدفوع لا يمكن أن يتجاوز إجمالي الفاتورة', 'error');
+            return;
+        }
+    }
 
-var invoiceTypeValue = invoiceTypeRadio.value;
-if (isCash) {
-    var subtotal = cartTotal();
-
-    var discount = parseFloat(
-        document.getElementById('modal-discount').value
-    ) || 0;
-
-    var extraAmount = parseFloat(
-        document.getElementById('modal-extra-amount').value
-    ) || 0;
-
-    var paidAmount = parseFloat(
-        document.getElementById('modal-paid-amount').value
-    ) || 0;
-
-    var paymentMethod = document.getElementById('modal-payment-method');
-    var selectedOption = paymentMethod.options[paymentMethod.selectedIndex];
-
-    var increasePercentage = parseFloat(
-        selectedOption ? selectedOption.dataset.increase : 0
-    ) || 0;
-
-    var total = (subtotal - discount);
-    total += total * increasePercentage / 100;
-    total += extraAmount;
-
-    if (discount < 0 || discount > subtotal) {
-        showToast('الخصم غير صحيح', 'error');
+    var createdDate = document.getElementById('modal-created-date').value;
+    if (!createdDate) {
+        showToast('الرجاء تحديد تاريخ الإضافة', 'error');
         return;
     }
 
-    if (paidAmount < total) {
-        showToast(
-            'العميل النقدي يجب أن يدفع كامل المبلغ: ' +
-            total.toFixed(2) + ' د.ل',
-            'error'
-        );
-        return;
-    }
-}
-if (invoiceTypeValue === 'rent') {
-var startDate = document.getElementById('rent_start_date_input');
-var endDate = document.getElementById('rent_end_date_input');
-var rentSection = document.getElementById('rent-dates-section');
-var msgDiv = document.getElementById('availability-message');
-    
-    if (rentSection.style.display === 'none') {
-        showToast('الرجاء التأكد من اختيار نوع الفاتورة ايجار', 'error');
-        return;
-    }
-    
-    if (!startDate || !startDate.value) {
-        showToast('الرجاء تحديد تاريخ البداية', 'error');
-        return;
-    }
-    if (!endDate || !endDate.value) {
-        showToast('الرجاء تحديد تاريخ النهاية', 'error');
-        return;
-    }
-    if (endDate.value < startDate.value) {
-        showToast('تاريخ النهاية يجب ان يكون بعد تاريخ البداية', 'error');
-        return;
-    }
-    
-    if (msgDiv.classList.contains('unavailable')) {
-        showToast('المنتج غير متاح في هذه الفترة', 'error');
-        return;
-    }
-}
+    document.getElementById('form_customer_id').value = selectedCustomer ? selectedCustomer.id : '';
+    document.getElementById('form_is_cash').value = isCash ? '1' : '0';
+    document.getElementById('form_commission').value = '0';
+    document.getElementById('form_identity_verified').value = document.getElementById('modal-identity-verified').checked ? 'true' : 'false';
+    document.getElementById('form_paid_amount').value = document.getElementById('modal-paid-amount').value || '0';
+    document.getElementById('form_discount').value = document.getElementById('modal-discount').value || '0';
+    document.getElementById('form_extra_amount').value = document.getElementById('modal-extra-amount').value || '0';
+    document.getElementById('form_payment_method').value = document.getElementById('modal-payment-method').value || '';
+    document.getElementById('form_notes').value = document.getElementById('modal-notes').value || '';
+    document.getElementById('form_sale_price').value = document.getElementById('sale_price_display').value || '0';
+    document.getElementById('form_created_date').value = createdDate;
 
-if (invoiceTypeValue === 'sale') {
-    const salePrice = parseFloat(
-        document.getElementById('sale_price_display').value
-    ) || 0;
+    // تاريخ التجربة (اختياري)
+    var testAtVal = document.getElementById('modal-test-at').value || '';
+    document.getElementById('form_test_at').value = testAtVal;
 
-    const paidAmount = parseFloat(
-        document.getElementById('modal-paid-amount').value
-    ) || 0;
-
-    const discount = parseFloat(
-        document.getElementById('modal-discount').value
-    ) || 0;
-
-    const extraAmount = parseFloat(
-        document.getElementById('modal-extra-amount').value
-    ) || 0;
-
-    if (salePrice < 0 || discount < 0 || discount > salePrice) {
-        showToast('يرجى التأكد من سعر البيع والخصم', 'error');
-        return;
+    // تاريخ النهاية (كما اختاره المستخدم)
+    if (invoiceTypeValue === 'rent') {
+        document.getElementById('form_rent_start_date').value = document.getElementById('rent_start_date_input').value;
+        document.getElementById('form_rent_end_date').value = document.getElementById('rent_end_date_input').value;
+        document.getElementById('form_rent_days').value = '7';
     }
 
-    const paymentMethod = document.getElementById('modal-payment-method');
-    const option = paymentMethod.options[paymentMethod.selectedIndex];
-    const increase = parseFloat(option?.dataset.increase) || 0;
+    var container = document.getElementById('form-products-container');
+    container.innerHTML = '';
+    Object.values(cart).forEach(function(p) {
+        var fid = document.createElement('input');
+        fid.type = 'hidden'; fid.name = 'product_' + p.id + '_id'; fid.value = p.id;
 
-    const total = ((salePrice - discount) * (1 + increase / 100)) + extraAmount;
+        var fdays = document.createElement('input');
+        fdays.type = 'hidden'; fdays.name = 'product_' + p.id + '_days';
+        fdays.value = (invoiceTypeValue === 'rent') ? 1 : p.qty;
 
-    if (paidAmount > total) {
-        showToast('المبلغ المدفوع لا يمكن أن يتجاوز إجمالي الفاتورة', 'error');
+        var fprice = document.createElement('input');
+        fprice.type = 'hidden'; fprice.name = 'product_' + p.id + '_price'; fprice.value = p.price;
+
+        container.appendChild(fid);
+        container.appendChild(fdays);
+        container.appendChild(fprice);
+    });
+
+    var saveButton = document.querySelector('.modal-submit-btn');
+    if (saveButton) {
+        if (saveButton.disabled) return;
+        saveButton.disabled = true;
+        saveButton.textContent = 'جاري الحفظ...';
+    }
+
+    var formEl = document.getElementById('sale-invoice-form');
+    if (!formEl) {
+        showToast('حدث خطأ: لم يتم العثور على النموذج', 'error');
         return;
     }
+    formEl.submit();
 }
 
+/* ====== التهيئة ====== */
+document.addEventListener('DOMContentLoaded', function() {
+    toggleInvoiceType();
 
-document.getElementById('form_customer_id').value = selectedCustomer ? selectedCustomer.id : '';
-document.getElementById('form_is_cash').value = isCash ? '1' : '0';
-document.getElementById('form_commission').value = '0';
-document.getElementById('form_identity_verified').value = document.getElementById('modal-identity-verified').checked ? 'true' : 'false';
-document.getElementById('form_paid_amount').value = document.getElementById('modal-paid-amount').value || '0';
-document.getElementById('form_discount').value = document.getElementById('modal-discount').value || '0';
-document.getElementById('form_extra_amount').value = document.getElementById('modal-extra-amount').value || '0';
-document.getElementById('form_payment_method').value = document.getElementById('modal-payment-method').value || '';
-document.getElementById('form_notes').value = document.getElementById('modal-notes').value || '';
-document.getElementById('form_sale_price').value = document.getElementById('sale_price_display').value || '0';
-var createdDate = document.getElementById('modal-created-date').value;
+    var urlParams = new URLSearchParams(window.location.search);
+    var barcode = urlParams.get('barcode');
 
-if (!createdDate) {
-    showToast('الرجاء تحديد تاريخ الإضافة', 'error');
-    return;
-}
+    if (barcode) {
+        var searchInput = document.getElementById('product-search');
+        if (searchInput) {
+            searchInput.value = barcode;
+            searchInput.dispatchEvent(new Event('input'));
 
-document.getElementById('form_created_date').value = createdDate;
+            setTimeout(function() {
+                var cards = document.querySelectorAll('.product-card');
+                cards.forEach(function(card) {
+                    var cardBarcode = card.dataset.barcode || '';
+                    if (cardBarcode === barcode) {
+                        var productId = parseInt(card.dataset.id);
+                        addToCart(productId);
+                        showToast('تم اضافة المنتج: ' + card.dataset.name, 'success');
+                    }
+                });
+            }, 500);
+        }
+    }
 
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('rent_start_date_input').value = today;
+    updateRentDates();
+    checkAvailability();
 
-var container = document.getElementById('form-products-container');
-container.innerHTML = '';
-Object.values(cart).forEach(function(p) {
-var fid = document.createElement('input');
-fid.type = 'hidden'; fid.name = 'product_' + p.id + '_id'; fid.value = p.id;
-var fdays = document.createElement('input');
-if (invoiceTypeValue === 'rent') {
-fdays.type = 'hidden'; fdays.name = 'product_' + p.id + '_days'; fdays.value = p.days;
-} else {
-fdays.type = 'hidden'; fdays.name = 'product_' + p.id + '_days'; fdays.value = 0;
-}
-var fprice = document.createElement('input');
-fprice.type = 'hidden'; fprice.name = 'product_' + p.id + '_price'; fprice.value = p.price;
-container.appendChild(fid);
-container.appendChild(fdays);
-container.appendChild(fprice);
-});
+    document.getElementById('rent_start_date_input').addEventListener('change', function() {
+        updateRentDates();
+        checkAvailability();
+    });
 
+    document.getElementById('rent_end_date_input').addEventListener('change', function() {
+        onEndDateChange();
+    });
 
-
-const saveButton = document.querySelector('.modal-submit-btn');
-
-if (saveButton) {
-    if (saveButton.disabled) return;
-
-    saveButton.disabled = true;
-    saveButton.textContent = 'جاري الحفظ...';
-}
-
-var formEl = document.getElementById('sale-invoice-form');
-if (!formEl) {
-    showToast('حدث خطأ: لم يتم العثور على النموذج', 'error');
-    return;
-}
-
-formEl.submit();
-
-}
-document.addEventListener('DOMContentLoaded', function () {
-
-    const images = document.querySelectorAll('.product-image[data-src]');
-
-    const imageObserver = new IntersectionObserver(function(entries, observer) {
-
-        entries.forEach(function(entry) {
-
-            if (!entry.isIntersecting) {
-                return;
+    document.getElementById('product-search').addEventListener('input', function() {
+        var q = normalizeArabic(this.value);
+        var cards = document.querySelectorAll('.product-card');
+        var visible = 0;
+        cards.forEach(function(card) {
+            var searchStr = normalizeArabic(card.dataset.search || '');
+            if (!q || searchStr.includes(q)) {
+                card.classList.remove('hidden-card');
+                visible++;
+            } else {
+                card.classList.add('hidden-card');
             }
+        });
+        document.getElementById('no-results').style.display = (visible === 0 && q) ? 'block' : 'none';
+    });
 
-            const img = entry.target;
-            const src = img.dataset.src;
-
+    var images = document.querySelectorAll('.product-image[data-src]');
+    var imageObserver = new IntersectionObserver(function(entries, observer) {
+        entries.forEach(function(entry) {
+            if (!entry.isIntersecting) return;
+            var img = entry.target;
+            var src = img.dataset.src;
             if (src) {
                 img.src = src;
                 img.removeAttribute('data-src');
             }
-
             observer.unobserve(img);
         });
-
-    }, {
-        rootMargin: '300px 0px'
-    });
-
-    images.forEach(function(img) {
-        imageObserver.observe(img);
-    });
-
+    }, { rootMargin: '300px 0px' });
+    images.forEach(function(img) { imageObserver.observe(img); });
 });
 </script>
 {% endblock %}
