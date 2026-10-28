@@ -716,10 +716,6 @@
                 <span class="value" dir="ltr">{{ reservation.rent_end_date|date:'Y-m-d'|default:'-' }}</span>
             </div>
             <div class="info-row">
-                <span class="label">عدد الاسابيع</span>
-                <span class="value highlight">{{ rental_days }} اسبوع</span>
-            </div>
-            <div class="info-row">
                 <span class="label">طريقة الدفع</span>
                 <span class="value">{{ reservation.payment_method.name|default:'غير محدد' }}</span>
             </div>
@@ -878,9 +874,6 @@
                 <i class="fa-solid fa-shirt"></i> الفساتين المحجوزة
                 <span class="count-badge">{{ total_items }}</span>
             </h3>
-            <span style="font-size: 13px; color: #6b7280;">
-                <i class="fa-regular fa-clock"></i> {{ rental_days }} الاسابيع
-            </span>
         </div>
 
         <div class="table-wrap">
