@@ -338,7 +338,7 @@ def category_list(request):
 
 @login_required
 def category_create(request):
-    if not request.user.is_main_admin():
+    if not request.user.is_main_admin() and not request.user.is_product_manager():
         messages.error(request, 'ليس لديك صلاحية لإضافة فئات')
         return redirect('categories')
     if request.method == 'POST':
@@ -355,7 +355,7 @@ def category_create(request):
 def category_edit(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     
-    if not request.user.is_main_admin():
+    if not request.user.is_main_admin() and not request.user.is_product_manager():
         messages.error(request, 'ليس لديك صلاحية لتعديل الفئات')
         return redirect('categories')
     
@@ -406,7 +406,7 @@ def product_search_ajax(request):
 
 @login_required
 def products_bulk_price_update(request):
-    if not request.user.is_main_admin():
+    if not request.user.is_main_admin() and not request.user.is_product_manager():
         messages.error(request, 'غير مصرح لك بتعديل أسعار المنتجات')
         return redirect('products_list')
     
