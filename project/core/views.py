@@ -35,8 +35,12 @@ def home(request):
     if not request.user.is_authenticated:
         return redirect('user_login')
     else:  
-        return redirect('statistics')
-      
+        if user.is_accountant() or user.can_see_all_data():
+            return redirect('statistics')
+        elif user.is_product_manager():
+            return redirect('products_list')
+        else:
+            return redirect('create_invoice')      
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -51,8 +55,10 @@ def login_view(request):
                 login(request, user)
                 if user.is_accountant() or user.can_see_all_data():
                   return redirect('statistics')
-  
-                return redirect('create_invoice')
+                elif user.is_product_manager():
+                  return redirect('products_list')
+                else:
+                  return redirect('create_invoice')
             else:
                 messages.error(request, 'اسم المستخدم أو كلمة المرور غير صحيحة')
     else:
