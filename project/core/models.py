@@ -892,6 +892,7 @@ class Employee(models.Model):
       )
 
 
+
     @property
     def monthly_remaining(self):
      return self.net_monthly_salary - self.total_monthly_paid
