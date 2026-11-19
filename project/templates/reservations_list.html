@@ -553,15 +553,6 @@ tbody td {
             value="{{ end_date }}"
         >
     </div>
-<div class="filter-group">
-    <label for="testAtFilter">تاريخ البروفة</label>
-    <input
-        type="date"
-        id="testAtFilter"
-        name="test_at"
-        value="{{ test_at_filter }}"
-    >
-</div>
     <button type="submit" class="btn-outline-gold">
         تطبيق الفلتر
     </button>
@@ -706,10 +697,13 @@ tbody td {
                             {% if invoice.status == 'pending' %}
                                 <button class="btn-sm btn-deliver-sm" onclick="markAsDelivered({{ invoice.id }}, this)">تسليم</button>
                             {% endif %}
-                            
+
+                          {% if request.user.is_main_admin %}
+          
                   <a class="btn btn-danger" href="{% url 'cancel_invoice' invoice.id %}" title="حذف">
                     <i class="fas fa-times"></i>
                   </a>
+                  {% endif %}
                         </div>
                     </td>
                 </tr>
@@ -798,10 +792,12 @@ tbody td {
                 {% if invoice.status == 'pending' %}
                     <button class="btn-sm btn-deliver-sm" onclick="markAsDelivered({{ invoice.id }}, this)">تسليم</button>
                 {% endif %}
-                
+                {% if request.user.is_main_admin %}
+
                   <a class="btn btn-danger" href="{% url 'cancel_invoice' invoice.id %}" title="حذف">
                     <i class="fas fa-times"></i>
                   </a>
+                {% endif %}  
             </div>
         </div>
         {% empty %}
