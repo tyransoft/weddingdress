@@ -2037,7 +2037,7 @@ def statistics(request):
     )
 
     total_net_profit = (
-       total_payments        
+       total_payments  + total_old_revenue     
         - total_operating_expenses
     )
     
